@@ -389,14 +389,6 @@ Project author and contact:
 - LinkedIn: `https://www.linkedin.com/in/ali-shoeibi01/`
 - Location: `Salamanca, Spain`
 
-## For GitHub Users
-
-If you publish this project, users should know:
-
-- they must install Python and Node.js
-- they must run backend and frontend separately
-- they must use their own Gemini API key
-- some Gemini features may fail temporarily if quota is exceeded or the model is under high demand
 
 ## Copy-Paste Summary
 
