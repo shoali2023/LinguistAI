@@ -2,15 +2,15 @@
 
 ## Overview
 
-LinguistAI is a full-stack speech learning platform powered by Gemini. It combines speech synthesis, speech recognition, pronunciation coaching, translation support, and adaptive learner profiling in a single web application.
+LinguistAI is a full-stack speech learning platform powered by Gemini. It brings together speech synthesis, speech recognition, pronunciation coaching, translation support, and adaptive learner profiling in a single web application.
 
-The project was built as a university speech-technology platform, but its structure follows a product-oriented architecture:
+The project was originally built as a university speech-technology platform, but its structure follows a product-oriented architecture:
 
 - React frontend for the user experience
 - FastAPI backend for API orchestration
 - Gemini integration for TTS, STT, pronunciation analysis, translation, and learning feedback
 
-The goal of the app is not only to process speech, but to help a learner understand, practice, and improve spoken language.
+The goal of the application is not simply to process speech, but to help the learner understand, practice, and improve spoken language through guided interaction.
 
 ## Main Product Capabilities
 
@@ -26,7 +26,7 @@ LinguistAI currently supports:
 
 ## Core User Experience
 
-The user enters the app through a dashboard-based interface and works with guided flows instead of raw tools.
+The user enters the application through a dashboard-based interface and works with guided flows rather than raw tools.
 
 Main sections:
 
@@ -35,9 +35,10 @@ Main sections:
 - `Speech to Text (STT)`
 - `Practice`
 - `Scenario Practice`
+- `Benchmark & Analytics`
 - `Settings`
 
-The app is designed to feel like a calm, professional language-learning workspace rather than a developer demo.
+The product is designed to feel like a calm, professional language-learning workspace rather than a developer demo.
 
 ## Requirements
 
@@ -68,25 +69,25 @@ Gemini API key creation link:
 
 ```text
 LinguistAI/
-├── backend/
-│   ├── main.py
-│   ├── requirements.txt
-│   └── app/
-│       ├── prompts.py
-│       ├── schemas.py
-│       ├── routes/
-│       ├── services/
-│       └── utils/
-├── frontend/
-│   ├── package.json
-│   └── src/
-│       ├── components/
-│       ├── pages/
-│       ├── services/
-│       ├── state/
-│       └── i18n/
-├── README.md
-└── READMEprofesional.md
+|-- backend/
+|   |-- main.py
+|   |-- requirements.txt
+|   `-- app/
+|       |-- prompts.py
+|       |-- schemas.py
+|       |-- routes/
+|       |-- services/
+|       `-- utils/
+|-- frontend/
+|   |-- package.json
+|   `-- src/
+|       |-- components/
+|       |-- pages/
+|       |-- services/
+|       |-- state/
+|       `-- i18n/
+|-- README.md
+`-- READMEprofesional.md
 ```
 
 ## Frontend Architecture
@@ -168,7 +169,7 @@ Audio uploads are handled as temporary processing files and are cleaned up after
 
 ## Learning Profile System
 
-The app includes an adaptive learner profile.
+The application includes an adaptive learner profile that personalizes both the experience and the generated output.
 
 The profile can contain:
 
@@ -213,6 +214,13 @@ The backend:
 - wraps the returned PCM into WAV
 - sends audio back to the frontend
 
+Current evaluation signals shown in the UI:
+
+- audio generated
+- processing time
+- selected voice
+- model metadata
+
 ### 2. Speech to Text (STT)
 
 Purpose:
@@ -235,6 +243,12 @@ The backend:
 - requests structured JSON
 - normalizes fields
 - returns transcript, summary, vocabulary, and study notes
+
+Current evaluation signals shown in the UI:
+
+- confidence
+- processing time
+- model metadata
 
 ### 3. Pronunciation Practice
 
@@ -293,28 +307,21 @@ The user can:
 
 ## Prompt Engineering
 
-The app uses structured prompt-building functions for major tasks.
+The application relies on structured prompt-building functions for all major AI tasks. These include TTS prompts, STT prompts, pronunciation prompts, scenario prompts, translation prompts, and practice explanation prompts.
 
-Examples:
+Across the project, prompt design follows a few clear principles:
 
-- TTS prompts
-- STT prompts
-- pronunciation prompts
-- scenario prompts
-- translation prompts
-- practice explanation prompts
-
-Prompt design principles:
-
-- profile-aware
-- strict JSON when needed
-- pedagogical output
+- profile-aware instructions
+- strict JSON output when needed
+- pedagogical structure
 - concise learner-friendly feedback
 - fallback handling for unclear audio
 
+This design is important because the quality of the system does not depend only on the model, but also on how the application formulates each task.
+
 ## Audio Handling
 
-The app handles audio at several stages:
+The application handles audio at several stages:
 
 - browser recording
 - frontend playback
@@ -344,7 +351,65 @@ Design principles:
 - multilingual support
 - accessibility-aware contrast
 
-The UX is designed to reduce cognitive load while keeping all advanced features available.
+The overall UX is intended to reduce cognitive load while keeping advanced functionality available.
+
+## Benchmark and Analytics
+
+The application includes a dedicated `Benchmark & Analytics` page.
+
+This page supports two benchmark flows:
+
+- `STT benchmark`
+- `TTS benchmark`
+
+### STT benchmark
+
+The STT benchmark is connected to the backend evaluation flow and uses the dataset in `data/stt/metadata.csv`.
+
+Current STT benchmark capabilities:
+
+- choose the number of STT samples to evaluate
+- run the dataset evaluation from the UI
+- inspect generated STT outputs
+- view benchmark summaries in the interface
+- export STT benchmark results as CSV
+
+Current STT benchmark metrics:
+
+- WER
+- accuracy
+- STT latency
+- pronunciation latency
+- total processing time
+- confidence
+- pronunciation score
+- model information
+- success or error status
+
+### TTS benchmark
+
+The TTS benchmark is lighter and runs directly from the frontend by generating benchmark audio samples from predefined text prompts.
+
+Current TTS benchmark capabilities:
+
+- choose the number of TTS samples to generate
+- generate benchmark audio directly on the analytics page
+- play generated benchmark audio inside the page
+- export TTS benchmark results as CSV
+
+Current TTS benchmark metrics available in the interface:
+
+- generated text
+- selected voice
+- processing latency
+- model information
+- audio generated yes/no
+- success or error status
+
+Important limitation:
+
+- TTS does not yet have an automatic quality score such as confidence, MOS, or pronunciation score
+- quality review is therefore still based on listening evaluation plus timing metadata
 
 ## How to Run the Project
 
@@ -418,13 +483,14 @@ This is why LinguistAI should be understood as a full speech-and-learning platfo
 
 ## Error Handling and Known Runtime Limits
 
-Some errors come from Gemini availability rather than from the app itself.
+Some errors come from Gemini availability rather than from the application itself.
 
 Common cases:
 
 - `429`: user quota or rate limit reached
 - `503`: Gemini model temporarily overloaded
 - API key rejected: invalid key or access issue
+- `400 Upload has already been terminated`: Gemini file-upload reference failed during an audio benchmark or analysis flow
 
 The app includes user-friendly handling for many of these cases, but cloud-model availability can still affect runtime behavior.
 
@@ -436,8 +502,10 @@ Current system limitations include:
 - no persistent database
 - learning history stored locally in browser storage
 - dependence on Gemini availability and quotas
+- TTS free-tier quota can be especially restrictive for benchmark generation
 - some interface translations are partial
 - pronunciation scoring is AI-based feedback, not a phoneme-aligner
+- benchmark quality metrics for TTS are still partly manual rather than fully automatic
 
 ## Why This Project Matters
 
@@ -471,7 +539,7 @@ To run it, the user mainly needs:
 - a Gemini API key
 - two terminals
 
-Once started, the app provides a guided multilingual language-learning experience built around speech and understanding.
+Once started, the application provides a guided multilingual language-learning experience built around speech and understanding.
 
 ## Project Links
 

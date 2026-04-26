@@ -6,6 +6,7 @@ import InlineNotice from "../components/InlineNotice";
 import PageHeader from "../components/PageHeader";
 import PronunciationResult from "../components/PronunciationResult";
 import ScenarioSelector from "../components/ScenarioSelector";
+import TechnicalMetadataPanel from "../components/TechnicalMetadataPanel";
 import { Button } from "../components/ui/button";
 import { Card, CardDescription, CardTitle } from "../components/ui/card";
 import {
@@ -153,7 +154,12 @@ export default function ScenarioPage() {
               <AudioRecorder
                 onRecorded={(blob) => {
                   const mimeType = blob.type || "audio/ogg";
-                  const extension = mimeType.includes("ogg") ? "ogg" : mimeType.includes("wav") ? "wav" : "mp3";
+                  const extension =
+                    mimeType.includes("webm") ? "webm" :
+                    mimeType.includes("ogg") ? "ogg" :
+                    mimeType.includes("wav") ? "wav" :
+                    mimeType.includes("mpeg") || mimeType.includes("mp3") ? "mp3" :
+                    "bin";
                   setRecordedFile(new File([blob], `scenario-${Date.now()}.${extension}`, { type: mimeType }));
                 }}
               />
@@ -180,6 +186,17 @@ export default function ScenarioPage() {
       )}
 
       <PronunciationResult result={feedback} contrastiveTitle={t("practice.contrastiveInsight", "Contrastive Pronunciation Insight")} />
+
+      {feedback?.metadata && (
+        <TechnicalMetadataPanel
+          title="Metadata de la API"
+          description="Real-time backend metrics for scenario pronunciation review."
+          processingTime={feedback.metadata.processing_time_seconds}
+          model={feedback.metadata.model_display}
+          metricLabel="Intelligibility"
+          metricValue={feedback.metadata.intelligibility != null ? `${feedback.metadata.intelligibility}/100` : "--"}
+        />
+      )}
     </div>
   );
 }

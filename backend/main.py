@@ -6,6 +6,7 @@ import re
 from google.genai.errors import APIError
 
 from app.routes.auth import router as auth_router
+from app.routes.evaluation import router as evaluation_router
 from app.routes.scenario import router as scenario_router
 from app.routes.stt import router as stt_router
 from app.routes.translation import router as translation_router
@@ -37,6 +38,7 @@ app.include_router(tutor_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
 app.include_router(scenario_router, prefix="/api")
 app.include_router(translation_router, prefix="/api")
+app.include_router(evaluation_router, prefix="/api")
 
 
 @app.exception_handler(APIError)

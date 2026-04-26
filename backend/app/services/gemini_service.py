@@ -25,6 +25,11 @@ from app.utils.audio_processing import pcm_to_wav_bytes
 TTS_MODEL = "gemini-3.1-flash-tts-preview"
 AUDIO_MODEL = "gemini-2.5-flash"
 FALLBACK_AUDIO_MODELS = ["gemini-2.0-flash"]
+MODEL_DISPLAY_MAP = {
+    "gemini-3.1-flash-tts-preview": "Gemini 3.1 Flash TTS Preview",
+    "gemini-2.5-flash": "Gemini 2.5 Flash (Multimodal)",
+    "gemini-2.0-flash": "Gemini 2.0 Flash (Fallback Multimodal)",
+}
 
 STYLE_MAP = {
     "Neutral": "calm, balanced, and natural",
@@ -114,7 +119,7 @@ class GeminiService:
             config={"mime_type": mime_type},
         )
         prompt = build_stt_prompt(profile)
-        response = self._generate_with_retries(
+        response, used_model = self._generate_with_retries(
             model=AUDIO_MODEL,
             contents=[prompt, uploaded],
             config=types.GenerateContentConfig(
@@ -127,6 +132,8 @@ class GeminiService:
         parsed["vocabulary"] = self._ensure_object_list(parsed.get("vocabulary"))
         parsed["difficult_words"] = self._ensure_object_list(parsed.get("difficult_words"))
         parsed["suggested_practice"] = self._ensure_string_list(parsed.get("suggested_practice"))
+        parsed["confidence"] = self._normalize_score(parsed.get("confidence"))
+        parsed["_model_used"] = used_model
         return parsed
 
     def analyze_pronunciation(
@@ -141,7 +148,7 @@ class GeminiService:
             config={"mime_type": mime_type},
         )
         prompt = build_pronunciation_prompt(target_text=target_text, profile=profile)
-        response = self._generate_with_model_fallbacks(
+        response, used_model = self._generate_with_model_fallbacks(
             models=[AUDIO_MODEL, *FALLBACK_AUDIO_MODELS],
             contents=[prompt, uploaded],
             config=types.GenerateContentConfig(
@@ -175,6 +182,7 @@ class GeminiService:
             },
         )
         parsed.setdefault("overlay_tokens", self._build_overlay_tokens(target_text, parsed))
+        parsed["_model_used"] = used_model
         return parsed
 
     def generate_practice_sentence(self, profile: LearningProfilePayload, scenario: str) -> dict[str, Any]:
@@ -256,7 +264,7 @@ class GeminiService:
             vocabulary=payload.options.vocabulary,
             explanations=payload.options.explanations,
         )
-        response = self._generate_with_retries(
+        response, _ = self._generate_with_retries(
             model=AUDIO_MODEL,
             contents=prompt,
             config=types.GenerateContentConfig(
@@ -304,15 +312,16 @@ class GeminiService:
         contents: Any,
         config: types.GenerateContentConfig | None = None,
         attempts: int = 3,
-    ) -> Any:
+    ) -> tuple[Any, str]:
         last_error: APIError | None = None
         for attempt in range(1, attempts + 1):
             try:
-                return self.client.models.generate_content(
+                response = self.client.models.generate_content(
                     model=model,
                     contents=contents,
                     config=config,
                 )
+                return response, model
             except APIError as exc:
                 last_error = exc
                 status_code = getattr(exc, "status_code", None)
@@ -328,7 +337,7 @@ class GeminiService:
         models: list[str],
         contents: Any,
         config: types.GenerateContentConfig | None = None,
-    ) -> Any:
+    ) -> tuple[Any, str]:
         last_error: APIError | None = None
         for index, model in enumerate(models):
             try:
@@ -409,3 +418,13 @@ class GeminiService:
         if isinstance(value, list):
             return [item for item in value if isinstance(item, dict)]
         return []
+
+    def get_model_display_name(self, model_name: str) -> str:
+        return MODEL_DISPLAY_MAP.get(model_name, model_name)
+
+    def _normalize_score(self, value: Any) -> int:
+        try:
+            numeric = int(round(float(value)))
+        except (TypeError, ValueError):
+            return 0
+        return max(0, min(100, numeric))

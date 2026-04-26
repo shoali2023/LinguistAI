@@ -16,6 +16,9 @@ SUPPORTED_AUDIO_MIME_TYPES = {
     "audio/mp3": ".mp3",
     "audio/mpeg": ".mp3",
     "audio/ogg": ".ogg",
+    "audio/ogg;codecs=opus": ".ogg",
+    "audio/webm": ".webm",
+    "audio/webm;codecs=opus": ".webm",
     "audio/aiff": ".aiff",
     "audio/aac": ".aac",
     "audio/flac": ".flac",
@@ -45,8 +48,11 @@ def cleanup_file(path: Path) -> None:
 
 
 def normalize_audio_mime_type(mime_type: str | None, filename: str | None = None) -> str:
+    normalized_mime_type = (mime_type or "").split(";")[0].strip().lower()
     if mime_type in SUPPORTED_AUDIO_MIME_TYPES:
         return mime_type
+    if normalized_mime_type in SUPPORTED_AUDIO_MIME_TYPES:
+        return normalized_mime_type
 
     suffix = Path(filename or "").suffix.lower()
     if suffix == ".wav":
@@ -55,6 +61,8 @@ def normalize_audio_mime_type(mime_type: str | None, filename: str | None = None
         return "audio/mp3"
     if suffix == ".ogg":
         return "audio/ogg"
+    if suffix == ".webm":
+        return "audio/webm"
     if suffix in {".aiff", ".aif"}:
         return "audio/aiff"
     if suffix == ".aac":
@@ -63,7 +71,7 @@ def normalize_audio_mime_type(mime_type: str | None, filename: str | None = None
         return "audio/flac"
 
     raise ValueError(
-        "Unsupported audio format. Please upload WAV, MP3, OGG, AAC, AIFF, or FLAC."
+        "Unsupported audio format. Please upload WAV, MP3, OGG, WEBM, AAC, AIFF, or FLAC."
     )
 
 

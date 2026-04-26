@@ -145,6 +145,22 @@ export async function requestScenarioGenerate(apiKey, profile, scenario) {
   return parseResponse(response);
 }
 
+export async function requestEvaluationResults() {
+  const response = await fetch(`${API_BASE}/evaluation/results`, {
+    method: "GET"
+  });
+  return parseResponse(response);
+}
+
+export async function requestEvaluationRun(apiKey, limit = 3) {
+  const response = await fetch(`${API_BASE}/evaluation/run`, {
+    method: "POST",
+    headers: getHeaders(apiKey, { "Content-Type": "application/json" }),
+    body: JSON.stringify({ limit })
+  });
+  return parseResponse(response);
+}
+
 export async function requestTranslationAnalysis(apiKey, payload) {
   const response = await fetch(`${API_BASE}/translation/analyze`, {
     method: "POST",

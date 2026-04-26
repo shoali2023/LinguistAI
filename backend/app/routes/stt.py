@@ -1,9 +1,10 @@
+from time import perf_counter
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, File, Form, Header, HTTPException, UploadFile
 from pydantic import BaseModel
 
-from app.schemas import parse_learning_profile_json
+from app.schemas import ResponseMetadata, parse_learning_profile_json
 from app.services.gemini_service import GeminiService
 from app.utils.audio_processing import cleanup_file, normalize_audio_mime_type, persist_upload_file
 
@@ -20,6 +21,8 @@ class STTResponse(BaseModel):
     vocabulary: list[dict[str, Any]]
     difficult_words: list[dict[str, Any]]
     suggested_practice: list[str]
+    confidence: int
+    metadata: ResponseMetadata
 
 
 @router.post("/stt", response_model=STTResponse)
@@ -42,5 +45,14 @@ async def transcribe_and_analyze(
 
     service = GeminiService(api_key=x_gemini_api_key)
     learner_profile = parse_learning_profile_json(profile)
+    start_time = perf_counter()
     result = service.transcribe_and_analyze_audio(temp_path, mime_type, learner_profile)
+    processing_time = round(perf_counter() - start_time, 3)
+    model_used = str(result.pop("_model_used", ""))
+    result["metadata"] = ResponseMetadata(
+        processing_time_seconds=processing_time,
+        model=model_used,
+        model_display=service.get_model_display_name(model_used),
+        confidence=int(result.get("confidence", 0) or 0),
+    )
     return STTResponse(**result)

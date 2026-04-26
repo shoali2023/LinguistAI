@@ -30,6 +30,15 @@ class TranslationAnalyzeRequest(BaseModel):
     options: TranslationOptionsPayload = Field(default_factory=TranslationOptionsPayload)
 
 
+class ResponseMetadata(BaseModel):
+    processing_time_seconds: float = 0.0
+    model: str = ""
+    model_display: str = ""
+    confidence: int | None = None
+    pronunciation_score: int | None = None
+    intelligibility: int | None = None
+
+
 def parse_learning_profile_json(raw: str | None) -> LearningProfilePayload | None:
     if not raw:
         return None

@@ -56,10 +56,11 @@ def build_stt_prompt(profile: LearningProfilePayload | None) -> str:
         f"The learner level is {level}. The learning goal is {goal}. "
         f"Summarize in {native_language}. "
         "Return JSON with these keys: "
-        "transcript, summary, keywords, tone, study_notes, vocabulary, difficult_words, suggested_practice. "
+        "transcript, summary, keywords, tone, study_notes, vocabulary, difficult_words, suggested_practice, confidence. "
         "The vocabulary field must be an array of objects with term, translation, explanation. "
         "The difficult_words field must be an array of objects with word, explanation. "
-        "The suggested_practice field must be an array of short target-language practice sentences."
+        "The suggested_practice field must be an array of short target-language practice sentences. "
+        "The confidence field must be an integer from 0 to 100 representing transcript confidence."
     )
 
 

@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import OnboardingFlow from "./components/OnboardingFlow";
 import Dashboard from "./pages/Dashboard";
+import EvaluationDashboard from "./pages/EvaluationDashboard";
 import PracticePage from "./pages/PracticePage";
 import ScenarioPage from "./pages/ScenarioPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -29,6 +30,7 @@ function AppShell() {
           <Route path="/stt" element={<STTPage />} />
           <Route path="/practice" element={<PracticePage />} />
           <Route path="/scenario" element={<ScenarioPage />} />
+          <Route path="/analytics" element={<EvaluationDashboard />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>

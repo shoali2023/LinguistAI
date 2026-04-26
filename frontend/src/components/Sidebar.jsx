@@ -1,4 +1,4 @@
-import { AudioLines, LayoutDashboard, Mic2, Settings2, Speech, Theater } from "lucide-react";
+import { AudioLines, BarChart3, LayoutDashboard, Mic2, Settings2, Speech, Theater } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 import BrandLogo from "./BrandLogo";
@@ -14,6 +14,7 @@ export default function Sidebar() {
     { to: "/stt", label: t("sidebar.stt", "STT"), icon: AudioLines },
     { to: "/practice", label: t("sidebar.practice", "Practice"), icon: Mic2 },
     { to: "/scenario", label: t("sidebar.scenario", "Scenario Practice"), icon: Theater },
+    { to: "/analytics", label: "Benchmark & Analytics", icon: BarChart3 },
     { to: "/settings", label: t("sidebar.settings", "Settings"), icon: Settings2 }
   ];
   const badgeClass =

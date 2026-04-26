@@ -9,6 +9,7 @@ import PracticeStepper from "../components/PracticeStepper";
 import PronunciationResult from "../components/PronunciationResult";
 import ScenarioSelector from "../components/ScenarioSelector";
 import SmartTranslationAssistant from "../components/SmartTranslationAssistant";
+import TechnicalMetadataPanel from "../components/TechnicalMetadataPanel";
 import { Button } from "../components/ui/button";
 import { Card, CardDescription, CardTitle } from "../components/ui/card";
 import { requestAudioFeedback, requestPracticeSentence, requestPracticeSentenceExplanation, requestPronunciationAnalysisWithRetry, requestTTS } from "../services/api";
@@ -34,6 +35,7 @@ export default function PracticePage() {
   const fileFromBlob = (blob, prefix) => {
     const mimeType = blob.type || "audio/ogg";
     const extension =
+      mimeType.includes("webm") ? "webm" :
       mimeType.includes("ogg") ? "ogg" :
       mimeType.includes("wav") ? "wav" :
       mimeType.includes("mpeg") || mimeType.includes("mp3") ? "mp3" :
@@ -268,6 +270,40 @@ export default function PracticePage() {
       {busy && <div className="skeleton h-48" />}
 
       <PronunciationResult result={feedback} contrastiveTitle={t("practice.contrastiveInsight", "Contrastive Pronunciation Insight")} />
+
+      {feedback?.metadata && (
+        <TechnicalMetadataPanel
+          title="Metadata de la API"
+          description="Real-time backend metrics for pronunciation analysis."
+          processingTime={feedback.metadata.processing_time_seconds}
+          model={feedback.metadata.model_display}
+          metricLabel="Intelligibility"
+          metricValue={feedback.metadata.intelligibility != null ? `${feedback.metadata.intelligibility}/100` : "--"}
+        />
+      )}
+
+      {feedback && (
+        <Card className="border border-emerald-400/15 bg-slate-950/40">
+          <CardTitle>Inteligibilidad</CardTitle>
+          <CardDescription className="mt-2">
+            Comparative intelligibility based on Gemini pronunciation analysis for the sentence you recorded.
+          </CardDescription>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-200">
+              Score: {feedback.score}/100
+            </span>
+            <span className="rounded-full border border-white/10 bg-slate-900 px-4 py-2 text-sm text-slate-200">
+              {feedback.score >= 85 ? "High intelligibility" : feedback.score >= 65 ? "Developing intelligibility" : "Needs reinforcement"}
+            </span>
+          </div>
+          <p className="mt-4 text-sm text-slate-300">
+            Target: <span className="text-white">{targetText}</span>
+          </p>
+          <p className="mt-2 text-sm text-slate-300">
+            Gemini heard: <span className="text-white">{feedback.transcription || "[unclear]"}</span>
+          </p>
+        </Card>
+      )}
 
       {feedback && (
         <SmartTranslationAssistant

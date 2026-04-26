@@ -1,7 +1,9 @@
+from time import perf_counter
+
 from fastapi import APIRouter, BackgroundTasks, File, Form, Header, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 
-from app.schemas import LearningProfilePayload, parse_learning_profile_json
+from app.schemas import LearningProfilePayload, ResponseMetadata, parse_learning_profile_json
 from app.services.gemini_service import GeminiService
 from app.utils.audio_processing import cleanup_file, normalize_audio_mime_type, persist_upload_file
 
@@ -60,6 +62,7 @@ class PronunciationResponse(BaseModel):
     encouragement: str
     contrastive_insight: ContrastiveInsight
     overlay_tokens: list[PronunciationToken]
+    metadata: ResponseMetadata
 
 
 @router.post("/practice/generate", response_model=PracticeGenerateResponse)
@@ -109,10 +112,21 @@ async def analyze_pronunciation(
 
     service = GeminiService(api_key=x_gemini_api_key)
     learner_profile = parse_learning_profile_json(profile)
+    start_time = perf_counter()
     result = service.analyze_pronunciation(
         target_text=target_text,
         audio_path=temp_path,
         mime_type=mime_type,
         profile=learner_profile,
+    )
+    processing_time = round(perf_counter() - start_time, 3)
+    model_used = str(result.pop("_model_used", ""))
+    pronunciation_score = int(result.get("score", 0) or 0)
+    result["metadata"] = ResponseMetadata(
+        processing_time_seconds=processing_time,
+        model=model_used,
+        model_display=service.get_model_display_name(model_used),
+        pronunciation_score=pronunciation_score,
+        intelligibility=pronunciation_score,
     )
     return PronunciationResponse(**result)

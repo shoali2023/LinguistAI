@@ -11,4 +11,6 @@ env/
 .env.local
 backend/temp_audio/
 frontend/.vite/
-
+*.log
+*.out
+*.err

@@ -1,0 +1,6 @@
+id,language,text,type,notes
+1,en,"Hello, my name is Ali and this is a speech synthesis test.",short,"basic english"
+2,es,"Hola, me llamo Ali y esta es una prueba de síntesis de voz.",short,"basic spanish"
+3,en,"Artificial intelligence can transform the future of human computer interaction.",medium,"academic english"
+4,es,"La inteligencia artificial puede mejorar la comunicación entre humanos y máquinas.",medium,"academic spanish"
+5,en,"Speaker A: Hello, how are you today? Speaker B: I am fine, thank you.",dialogue,"multi-speaker style test"

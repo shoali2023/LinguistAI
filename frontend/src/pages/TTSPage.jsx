@@ -4,6 +4,7 @@ import AdvancedPanel from "../components/AdvancedPanel";
 import AudioPlayer from "../components/AudioPlayer";
 import InlineNotice from "../components/InlineNotice";
 import PageHeader from "../components/PageHeader";
+import TechnicalMetadataPanel from "../components/TechnicalMetadataPanel";
 import { Button } from "../components/ui/button";
 import { Card, CardDescription, CardTitle } from "../components/ui/card";
 import { requestTTS } from "../services/api";
@@ -149,6 +150,46 @@ export default function TTSPage() {
 
       <div className="space-y-6">
         <AudioPlayer audioUrl={audioUrl} title="Listen and review" description="Play the generated audio, check pacing, and regenerate only if you need a different style or learning mode." />
+        {audioData?.metadata && (
+          <Card>
+            <CardTitle>Evaluation Metrics</CardTitle>
+            <CardDescription className="mt-2">
+              Quick evaluation signals for this TTS result.
+            </CardDescription>
+            <div className="mt-4 grid gap-4">
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Audio Generated</p>
+                  <p className="mt-2 text-3xl font-semibold text-white">Yes</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Processing Time</p>
+                  <p className="mt-2 text-3xl font-semibold text-white">
+                    {audioData.metadata?.processing_time_seconds != null ? `${Number(audioData.metadata.processing_time_seconds).toFixed(3)}s` : "--"}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Voice</p>
+                  <p className="mt-2 text-3xl font-semibold text-white">{audioData.voice || "--"}</p>
+                </div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Model</p>
+                <p className="mt-2 text-sm font-semibold text-white">{audioData.metadata?.model_display || "--"}</p>
+              </div>
+            </div>
+          </Card>
+        )}
+        {audioData?.metadata && (
+          <TechnicalMetadataPanel
+            title="Metadata de la API"
+            description="Technical evaluation metadata for the TTS generation request."
+            processingTime={audioData.metadata.processing_time_seconds}
+            model={audioData.metadata.model_display}
+            metricLabel="Voice"
+            metricValue={audioData.voice || "--"}
+          />
+        )}
         {loading && <div className="skeleton h-64 w-full" />}
       </div>
     </div>

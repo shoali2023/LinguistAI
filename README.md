@@ -1,15 +1,13 @@
 # LinguistAI
 
-LinguistAI is a speech-learning web app. It helps the user:
+LinguistAI is a speech-learning web application built around practical voice interaction. It helps the user:
 
 - turn text into voice
 - turn speech into text
 - practice pronunciation
-- understand speech with translation and vocabulary help
+- understand spoken content with translation and vocabulary support
 
-This guide is written for a non-technical user.
-
-If you can copy and paste commands into `Command Prompt` or `PowerShell`, you can run this project.
+This guide is written for a non-technical user. If you can copy and paste commands into `Command Prompt` or `PowerShell`, you can run this project locally.
 
 ## Before You Start
 
@@ -77,7 +75,7 @@ If you already installed Git, Node.js, and Python, follow these exact steps.
 Open `Command Prompt` or `PowerShell`, then copy and paste:
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY.git
+git clone https://github.com/shoali2023/LinguistAI.git
 cd LinguistAI
 ```
 
@@ -157,13 +155,13 @@ Inside the app:
 3. Paste your Gemini API key
 4. Wait for the message that says the key is approved
 
-After that, you can use the app.
+After that, you can start using the app.
 
 ## What the User Can Do in the App
 
 ### Dashboard
 
-See:
+The dashboard gives a quick overview of the learner experience. From here, the user can review:
 
 - learning profile
 - scores
@@ -178,6 +176,11 @@ Use this page to:
 - type text
 - generate voice
 - hear pronunciation audio
+- view evaluation metrics like:
+  - audio generated
+  - processing time
+  - voice
+  - model
 
 ### Speech to Text (STT)
 
@@ -189,6 +192,26 @@ Use this page to:
 - get summary
 - get vocabulary help
 - use translation support
+- view evaluation metrics like:
+  - confidence
+  - processing time
+  - model
+
+### Benchmark & Analytics
+
+Use this page to:
+
+- run an STT benchmark with dataset audio samples
+- generate TTS benchmark audio samples
+- see STT benchmark outputs
+- listen to TTS benchmark outputs
+- download benchmark results as CSV
+
+Important:
+
+- `STT Samples` controls how many STT dataset examples are tested
+- `TTS Samples` controls how many TTS audio samples are generated
+- STT and TTS use different Gemini quotas
 
 ### Practice
 
@@ -251,7 +274,7 @@ That opens the table:
 
 ## Very Simple Daily Usage
 
-After everything is installed, next time the user only needs to do this:
+After everything is installed, the next session is much simpler. The user only needs to do this:
 
 ### Terminal 1
 
@@ -334,6 +357,31 @@ Fix:
 
 - wait and try again later
 - or use a Gemini project with more quota
+- if you are using the benchmark page, lower `TTS Samples` to `1` or `2`
+
+### Problem: benchmark TTS samples fail with `429 RESOURCE_EXHAUSTED`
+
+Reason:
+
+- Gemini TTS free tier can be very small
+- too many TTS requests were sent in a short time
+
+Fix:
+
+- reduce `TTS Samples`
+- wait about 10 to 15 seconds
+- try again
+
+### Problem: benchmark STT fails with `Upload has already been terminated`
+
+Reason:
+
+- Gemini file upload session failed during the benchmark flow
+
+Fix:
+
+- rerun the benchmark
+- if it keeps happening, restart backend and try again
 
 ### Problem: Practice says Gemini is overloaded
 
@@ -388,7 +436,6 @@ Project author and contact:
 - Email: `ali.shoeibi1@gmail.com`
 - LinkedIn: `https://www.linkedin.com/in/ali-shoeibi01/`
 - Location: `Salamanca, Spain`
-
 
 ## Copy-Paste Summary
 

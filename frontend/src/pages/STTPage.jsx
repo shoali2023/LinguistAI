@@ -4,6 +4,7 @@ import AudioRecorder from "../components/AudioRecorder";
 import InlineNotice from "../components/InlineNotice";
 import PageHeader from "../components/PageHeader";
 import SmartTranslationAssistant from "../components/SmartTranslationAssistant";
+import TechnicalMetadataPanel from "../components/TechnicalMetadataPanel";
 import { Button } from "../components/ui/button";
 import { Card, CardDescription, CardTitle } from "../components/ui/card";
 import { requestSTT } from "../services/api";
@@ -21,6 +22,7 @@ export default function STTPage() {
   const fileFromBlob = (blob, prefix) => {
     const mimeType = blob.type || "audio/ogg";
     const extension =
+      mimeType.includes("webm") ? "webm" :
       mimeType.includes("ogg") ? "ogg" :
       mimeType.includes("wav") ? "wav" :
       mimeType.includes("mpeg") || mimeType.includes("mp3") ? "mp3" :
@@ -113,6 +115,32 @@ export default function STTPage() {
             title="Understand this speech (translation and learning support)"
             description="Open this layer when you want a full translation, key vocabulary, a word-by-word view, or spoken translation audio."
           />
+          <Card>
+            <CardTitle>Evaluation Metrics</CardTitle>
+            <CardDescription className="mt-2">
+              Quick evaluation signals for this STT result.
+            </CardDescription>
+            <div className="mt-4 grid gap-4 md:grid-cols-3">
+              <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Confidence</p>
+                <p className="mt-2 text-3xl font-semibold text-white">
+                  {result.metadata?.confidence != null ? `${result.metadata.confidence}/100` : "--"}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Processing Time</p>
+                <p className="mt-2 text-3xl font-semibold text-white">
+                  {result.metadata?.processing_time_seconds != null ? `${Number(result.metadata.processing_time_seconds).toFixed(3)}s` : "--"}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Model</p>
+                <p className="mt-2 text-sm font-semibold text-white">
+                  {result.metadata?.model_display || "--"}
+                </p>
+              </div>
+            </div>
+          </Card>
           <div className="grid gap-4 lg:grid-cols-2">
             <Card>
               <CardTitle>{t("common.transcript", "Transcript")}</CardTitle>
@@ -134,6 +162,14 @@ export default function STTPage() {
                 </div>
               </div>
             </Card>
+            <TechnicalMetadataPanel
+              title="Metadata de la API"
+              description="Operational metrics returned with the Gemini STT workflow."
+              processingTime={result.metadata?.processing_time_seconds}
+              model={result.metadata?.model_display}
+              metricLabel="Confidence"
+              metricValue={result.metadata?.confidence != null ? `${result.metadata.confidence}/100` : "--"}
+            />
             <Card>
               <CardTitle>{t("common.vocabulary", "Vocabulary")}</CardTitle>
               <div className="mt-4 space-y-3 text-sm text-slate-200">
